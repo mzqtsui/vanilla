@@ -1,0 +1,152 @@
+<!-- Matthew Tsui -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vol 1. Hi</title>
+</head>
+<body>
+	<style>
+
+	body{
+		padding:0;
+		margin:0;
+		height:100vh;
+		width:100vw;
+	}
+	main{
+		height:100%;
+		width:100%;
+		display:flex;
+		justify-content:center;
+		align-items:center;
+		flex-direction:column;
+	}
+		
+	</style>
+	<template id="cardTemplate">
+		<style>
+			#greeting{			
+				--2dp: 0 1px 5px 0 rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.12);
+			}
+			#greeting{
+				margin-bottom:10px;
+				font-family:Roboto, Helvetica, Arial, sans-serif;
+				color:white;
+				width:140px;
+				height:60px;
+				background: rgba(33,150,243 ,1);
+				border-radius:4px;
+				font-size:22px;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+				position:relative;
+				border:none;
+				outline:none;
+				transition:all 0.1s ease-in-out;
+
+			}
+			#greeting:hover{
+				cursor:pointer;
+				box-shadow:var(--2dp);
+			}
+			#greeting:active{
+				box-shadow:none;
+			}
+			
+		</style>
+		
+		<button id="greeting">
+			<content>Click Me</content>
+		</button>
+	</template>
+	<template id="rippleTemplate">
+		<style>
+			#ripple{
+				pointer-events:none;
+				background:black;
+				width:10px;
+				height:10px;
+				border-radius:50%;
+				position:absolute;
+				top:0;
+				left:0;
+				opacity:0.5;
+			}
+		</style>
+		<div id="ripple"></div>
+	</template>
+	<header>
+	</header>
+	<main>
+		<div id="btnContainer"></div>
+	</main>
+<script>
+
+
+(function(){
+
+	var requestAnimationFrame = window.requestAnimationFrame 		|| 
+	                            window.mozRequestAnimationFrame 	|| 
+	                            window.webkitRequestAnimationFrame || 
+	                            window.msRequestAnimationFrame;
+	var $ = function(elem){
+		return document.querySelectorAll(elem);
+	}
+	var container = $('#btnContainer')[0];
+	var shadow = container.createShadowRoot();
+	var cardTemplate = $('#cardTemplate')[0];
+	var clone = document.importNode(cardTemplate.content, true);
+	shadow.appendChild(clone);
+
+	var clone2 = document.importNode($('#rippleTemplate')[0].content, true);
+	shadow.querySelector('#greeting').appendChild(clone2);
+	var ripple = shadow.querySelector('#ripple');
+	
+	let greetings = [
+		'Hi',
+		'Hello',
+		'Bonjour',
+		'Bonsoir',
+		'你好',
+		'こんにちは'
+	];
+	container.addEventListener('click',function(ev){
+		container.textContent = getGreeting();
+		
+		ripple.style.transform= 'translate('+ (ev.offsetX-5) +'px,'+(ev.offsetY-5)+'px)';
+	});
+
+	function getGreeting(){
+		return greetings[rng(greetings.length).getNum()];
+	}
+
+	var rng = function(m){
+
+		var generateNum = function(){
+			return Math.floor(Math.random() * m);
+		}
+
+		var lastNum = generateNum();
+
+		var newNum = function(){
+			let n = generateNum();
+			while(n === lastNum) {
+				n = generateNum();
+			}
+			lastNum = n; 
+		};
+
+		return{
+			getNum: function(){
+				newNum();
+				return lastNum;
+			}
+		};
+	};
+
+})();
+
+</script>
+</body>
+</html>
