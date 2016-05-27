@@ -44,6 +44,7 @@
 				border:none;
 				outline:none;
 				transition:all 0.1s ease-in-out;
+				overflow:hidden;
 
 			}
 			#greeting:hover{
@@ -64,14 +65,12 @@
 		<style>
 			#ripple{
 				pointer-events:none;
-				background:black;
-				width:10px;
-				height:10px;
+				background:white;
+				width:20px;
+				height:20px;
 				border-radius:50%;
 				position:absolute;
-				top:0;
-				left:0;
-				opacity:0.5;
+				opacity:0.3;
 			}
 		</style>
 		<div id="ripple"></div>
@@ -103,22 +102,67 @@
 	shadow.querySelector('#greeting').appendChild(clone2);
 	var ripple = shadow.querySelector('#ripple');
 	
-	let greetings = [
-		'Hi',
-		'Hello',
-		'Bonjour',
-		'Bonsoir',
-		'你好',
-		'こんにちは'
-	];
-	container.addEventListener('click',function(ev){
-		container.textContent = getGreeting();
-		
-		ripple.style.transform= 'translate('+ (ev.offsetX-5) +'px,'+(ev.offsetY-5)+'px)';
+	
+	var rippleTranslate;
+	var currentScale = 1;
+	var currentOpacity = 0.3;
+
+	function resetRipple(){
+		currentScale = 1;
+		currentOpacity = 0.3;
+		ripple.style.transform = 'scale(1)';
+		ripple.style.opacity = '.3';
+		ripple.style.visibility ='hidden';
+	}
+	resetRipple();
+
+	container.addEventListener('mousedown',function(ev){
+		container.textContent = greeter().getGreeting();
+		resetRipple();
+		ripple.style.visibility ='';
+		ripple.style.left = (ev.offsetX-10) +'px';
+		ripple.style.top = (ev.offsetY-10)+'px';
+		rippleScale();
 	});
 
-	function getGreeting(){
-		return greetings[rng(greetings.length).getNum()];
+	
+	function rippleScale(){
+		if(currentScale > 13.0){
+			resetRipple();
+			window.cancelAnimationFrame(rippleScale);
+			
+			return;
+		}else if(currentScale > 10){
+			currentScale += 0.2;
+			currentOpacity -= 0.015;
+		}else{
+			currentScale += 0.6;
+			currentOpacity -= 0.01;
+		}
+
+		ripple.style.transform = 'scale('+currentScale+')';
+		ripple.style.opacity = currentOpacity + '';
+
+		requestAnimationFrame(rippleScale);
+	}
+	
+
+	var greeter = function(){
+		let greetings = [
+			'Hi',
+			'Hello',
+			'Bonjour',
+			'Bonsoir',
+			'你好',
+			'こんにちは',
+			'喂'
+		];
+
+		return{
+			getGreeting: function(){
+				return greetings[rng(greetings.length).getNum()];
+			}
+		}
 	}
 
 	var rng = function(m){
@@ -140,6 +184,7 @@
 		return{
 			getNum: function(){
 				newNum();
+				console.log(lastNum);
 				return lastNum;
 			}
 		};
