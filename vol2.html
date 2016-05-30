@@ -16,6 +16,7 @@
 		height:100vh;
 		width:100vw;
 		font-family:Helvetica, Arial, sans-serif;
+		background:rgba(39,40,34,1);
 	}
 	main{
 		height:100%;
@@ -25,20 +26,8 @@
 		align-items:center;
 		flex-direction:column;
 	}
-	#urlContainer{
-		display:flex;
-		margin-bottom:30px;
-	}
-	#urlContainer input{
-		font-size:16px;
-		width:400px;
-		border-radius:4px;
-		border-style:groove;
-		padding:6px;
-
-	}
-	#drop{
-		--c_gray: rgba(40,40,40,0.5);
+	#dropzone{
+		--c_gray: rgba(1,1,1,0.8);
 		width:300px;
 		height:200px;
 		border:5px dashed var(--c_gray);
@@ -48,14 +37,25 @@
 		color:var(--c_gray);
 
 	}
+
+	#dropzone input{
+		display:none;
+	}
+
+	#
+
+	video{
+		margin-bottom:20px;
+	}
 		
 	</style>
 	<main>
-		<div id="urlContainer">
-			<input placeholder="Enter a URL...">
-		</div>
-		<div id="drop">
+		<video width="420" id="video" controls>
+ 		</video>
+		<div id="dropzone">
 			Drop a video file...
+			<input type="file" id="fileselect" name="fileselect" />
+
 		</div>
 	</main>
 <script>
@@ -67,11 +67,52 @@
 	                            window.mozRequestAnimationFrame 	|| 
 	                            window.webkitRequestAnimationFrame  || 
 	                            window.msRequestAnimationFrame;
+	
+	//get first
 	var $ = function(elem){
-		return document.querySelectorAll(elem);
+		return document.querySelector(elem);
 	}
 
+	//get array
+	var $_ = function(elem){
+		return document.querySelectAll(elem);
+	}
 
+	//Modified code from https://www.sitepoint.com/html5-file-drag-and-drop/
+	var dropzone = $('#dropzone');
+
+	dropzone.addEventListener('dragover', FileDragHover, false);
+	dropzone.addEventListener('dragleave', FileDragHover, false);
+	dropzone.addEventListener('drop', FileSelectHandler, false);
+
+	function FileDragHover(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.className = (e.type == 'dragover' ? 'hover' : '');
+	}
+
+	function FileSelectHandler(e) {
+
+		// cancel event and hover styling
+		FileDragHover(e);
+		// // fetch FileList object
+		 var files = e.target.files || e.dataTransfer.files;
+
+		console.log(files);
+
+		// // process all File objects
+		// for (var i = 0, f; f = files[i]; i++) {
+		// 	ParseFile(f);
+		// }
+
+		var video = $('#video');
+
+		var srcElement = document.createElement('source');
+		srcElement.src = files[0].name;
+		srcElement.type = files[0].type;
+		video.appendChild(srcElement);
+
+	}
 })();
 
 </script>
