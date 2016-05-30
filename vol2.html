@@ -41,8 +41,8 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	}
 	#dropzone{
 		--c_gray: rgba(0,0,0,0.6);
-		width:300px;
-		height:200px;
+		width:160px;
+		height:80px;
 		border:5px dashed var(--c_gray);
 		display:flex;
 		justify-content: center;
@@ -57,31 +57,43 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 		display:none;
 	}
 
-	#
+	progress{
+		width:640px;
+	}
 
 	video{
 		margin-bottom:20px;
+	}
+
+	#video-controls{
+		display:flex;
+	}
+
+	#video-controls li{
+		list-style:none;
+	}
+
+	#volume{
+		width:60px;
 	}
 		
 	</style>
 	<main>
 		<div id="video-container">
-			<video width="420" id="video" controls>
+			<video width="640" id="video" controls>
 			
 	 		</video>
+	 		<div class="progress">
+	 			<progress id="progress" value="0" min="0">
+		         	<span id="progress-bar"></span>
+		      	</progress>
+	 		</div>
 	 		<nav id="video-controls" class="controls noselect">
 			   <li><i id="playpause" class="material-icons">play_arrow</i></li>
 			   <li><i id="mute" class="material-icons">volume_up</i></li>
-			   <li><button id="stop" type="button">Stop</button></li>
-			   <li class="progress">
-			      <progress id="progress" value="0" min="0">
-			         <span id="progress-bar"></span>
-			      </progress>
-			   </li>
-			   <li><button id="volinc" type="button">Vol+</button></li>
-			   <li><button id="voldec" type="button">Vol-</button></li>
 			   <li><input id="volume" type="range" max="100" min="0" oninput="updateVolume(value)"></li>
-			   <li><span id="volume-val"></span></li>
+			   <li><time id="playback-time"></time>/<time id="playback-total"></time></li>
+			   <li style="flex-grow:1;"></li>
 			   <li><i class="material-icons">settings</i></li>
 			   <li><i id="fs" class="material-icons">fullscreen</i></li>
 			</nav>
@@ -127,18 +139,17 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 
 	var videoContainer = $('#video-container');
 	var customControls = $('#video-controls');
+	var playbackTime = $('#playback-time');
+	var playbackTotal = $('#playback-total');
 	var volume = $('#volume');
 	volume.value = video.volume*100;
-	console.log(video.volume);
-	customControls.style.display = 'block';
 	video.controls = false;
+console.log(video.duration);
+
 
 	//Custom Video Controls base code from https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player
 	var playpause = document.getElementById('playpause');
-	var stop = document.getElementById('stop');
 	var mute = document.getElementById('mute');
-	var volinc = document.getElementById('volinc');
-	var voldec = document.getElementById('voldec');
 	var progress = document.getElementById('progress');
 	var progressBar = document.getElementById('progress-bar');
 	var fullscreen = document.getElementById('fs');
@@ -154,12 +165,6 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	    } 
 	});
 
-	stop.addEventListener('click', function(e) {
-	   video.pause();
-	   video.currentTime = 0;
-	   progress.value = 0;
-	});
-
 	mute.addEventListener('click', function(e) {
 	   video.muted = !video.muted;
 	   if(video.muted){
@@ -169,32 +174,30 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	   }
 	});
 
-	volinc.addEventListener('click', function(e) {
-	   alterVolume('+');
-	});
-	voldec.addEventListener('click', function(e) {
-	   alterVolume('-');
-	});
-
-	var alterVolume = function(dir) {
-	   var currentVolume = Math.floor(video.volume * 10) / 10;
-	   if (dir === '+') {
-	      if (currentVolume < 1) video.volume += 0.1;
-	   }
-	   else if (dir === '-') {
-	      if (currentVolume > 0) video.volume -= 0.1;
-	   }
-	   volume.value = video.volume*100;
-	   volval.innerHTML = video.volume;
-	}
-
 	function updateVolume(val){
 		video.volume = val/100;
 		volval.innerHTML = video.volume;
 	}
 
+	function secsToTime(secs){
+		console.log(secs);
+		secs = Number(secs);
+		let h = Math.floor(secs/3600);
+		let m = Math.floor(secs%3600/60);
+		let s = Math.floor(secs%3600%60);
+
+		return ((h > 0) ? h + ':' : '') +
+				((m < 10 && m > 0)? '0': '') + m + ':' + 
+				((s < 10)? '0' : '') + s;
+
+	}
+
+	//Once video has been loaded
 	video.addEventListener('loadedmetadata', function() {
 	   progress.setAttribute('max', video.duration);
+
+		playbackTime.innerHTML = '0:00';
+		playbackTotal.innerHTML = secsToTime(video.duration);
 	});
 
 
@@ -202,6 +205,7 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	   if (!progress.getAttribute('max')) progress.setAttribute('max', video.duration);
 	   progress.value = video.currentTime;
 	   progressBar.style.width = Math.floor((video.currentTime / video.duration) * 100) + '%';
+	   playbackTime.innerHTML = secsToTime(video.currentTime);
 	});
 
 	progress.addEventListener('click', function(e) {
