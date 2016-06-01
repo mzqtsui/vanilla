@@ -2,7 +2,6 @@
 	Matthew Tsui 
 	Playing with HTML5 <video>, <input> slider, drag & drop, etc.
 
-
 http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 -->
 <!DOCTYPE html>
@@ -19,7 +18,8 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 		margin:0;
 		height:100vh;
 		width:100vw;
-		font-family:Helvetica, Arial, sans-serif;	}
+		font-family:Helvetica, Arial, sans-serif;	
+	}
 	main{
 		height:100%;
 		width:100%;
@@ -41,8 +41,8 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	}
 	#dropzone{
 		--c_gray: rgba(0,0,0,0.6);
-		width:160px;
-		height:80px;
+		width:180px;
+		height:100px;
 		border:5px dashed var(--c_gray);
 		display:flex;
 		justify-content: center;
@@ -147,10 +147,8 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 		</div>
 	</div>
 	<main>
-		
 		<div id="video-container">
 			<video width="640" id="video" controls>
-			
 	 		</video>
 	 		<div id="toolbar">
 		 		<div class="progress">
@@ -173,8 +171,6 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	</main>
 <script>
 
-
-
 	var requestAnimationFrame = window.requestAnimationFrame 		|| 
 	                            window.mozRequestAnimationFrame 	|| 
 	                            window.webkitRequestAnimationFrame  || 
@@ -189,20 +185,8 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	var $_ = function(elem){
 		return document.querySelectAll(elem);
 	}
-
-	
 	
 	var video = $('#video');
-
-	//WIP: for testing, remove later
-	var srcElement = document.createElement('source');
-	srcElement.src = 'big_bunny.mp4' //files[0].name;
-	srcElement.type = 'video/mp4';//files[0].type;
-	video.appendChild(srcElement);
-
-
-	//
-
 	var videoContainer = $('#video-container');
 	var customControls = $('#video-controls');
 	var playbackTime = $('#playback-time');
@@ -211,13 +195,12 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	volume.value = video.volume*100;
 	video.controls = false;
 
-
 	//Custom Video Controls base code from https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player
-	var playpause = document.getElementById('playpause');
-	var mute = document.getElementById('mute');
-	var progress = document.getElementById('progress');
-	var progressBar = document.getElementById('progress-bar');
-	var fullscreen = document.getElementById('fs');
+	var playpause = $('#playpause');
+	var mute = $('#mute');
+	var progress = $('#progress');
+	var progressBar = $('#progress-bar');
+	var fullscreen = $('#fs');
 
 	playpause.addEventListener('click', function(e) {
 	    if (video.paused || video.ended){
@@ -403,7 +386,6 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 			window.cancelAnimationFrame(enterToolbar);
 			return;
 		}
-
 
 		toolOpacity += 0.1;
 		toolY -= 2;
