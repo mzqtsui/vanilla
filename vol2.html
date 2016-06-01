@@ -48,61 +48,128 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 		justify-content: center;
 		align-items:center;
 		color:var(--c_gray);
-
 	}
-
-
 
 	#dropzone input{
 		display:none;
 	}
 
-	progress{
-		width:640px;
+	#toolbar{
+		padding:5px;
+		display:flex;
+		flex-direction:column;
+		opacity:0;
+		transform: translateY(20px);
+	}
+
+	#toolbar div{
+		display:flex;
+		margin-bottom:10px;
+	}
+	progress[value]{
+		flex-grow:1;
+		-webkit-appearance:none;
+		-moz-appearance:none;
+		appearance:none;
+
+		height:6px;
+		cursor:pointer;
+		position:relative;
+	}
+	progress[value]::-webkit-progress-value{
+		background:#2196F3;
+	}
+	progress::-webkit-progress-value::before{
+		background:#2196F3;
+		height:10px;
+		width:10px;
+		border-radius:50%;
+		position:absolute;
+		right:0;
+		top:0;
+		content:'asd';
+	}
+
+	progress::-webkit-progress-value:after {
+	  content: '';
+	  width: 6px;
+	  height: 6px;
+	  position: absolute;
+	  border-radius: 100%;
+	  right: 7px;
+	  top: 7px;
+	  background-color: white;
+	}
+	progress[value]::-webkit-progress-bar{
+		background:#9E9E9E;
+		box-shadow: 1px 1px 3px rgba(0,0,0,0.2) inset;
 	}
 
 	video{
-		margin-bottom:20px;
+		transform: scale(0.4);
+		opacity:0;
 	}
 
 	#video-controls{
 		display:flex;
+		align-items:center;
+		margin-bottom:20px;
 	}
 
 	#video-controls li{
 		list-style:none;
+		margin: 0 3px;
+		cursor:pointer;
 	}
+
+
 
 	#volume{
 		width:60px;
 	}
+
+	#drop-overlay{
+		position:absolute;
+		z-index:10;
+		width:100vw; 
+		height:100vh;
+		display:flex;
+		align-items:center;
+		justify-content:center;
+	}
 		
 	</style>
-	<main>
-		<div id="video-container">
-			<video width="640" id="video" controls>
-			
-	 		</video>
-	 		<div class="progress">
-	 			<progress id="progress" value="0" min="0">
-		         	<span id="progress-bar"></span>
-		      	</progress>
-	 		</div>
-	 		<nav id="video-controls" class="controls noselect">
-			   <li><i id="playpause" class="material-icons">play_arrow</i></li>
-			   <li><i id="mute" class="material-icons">volume_up</i></li>
-			   <li><input id="volume" type="range" max="100" min="0" oninput="updateVolume(value)"></li>
-			   <li><time id="playback-time"></time>/<time id="playback-total"></time></li>
-			   <li style="flex-grow:1;"></li>
-			   <li><i class="material-icons">settings</i></li>
-			   <li><i id="fs" class="material-icons">fullscreen</i></li>
-			</nav>
-		</div>
+	<div id="drop-overlay">
 		<div id="dropzone">
 			Drop a video file...
 			<input type="file" id="fileselect" name="fileselect" />
 
 		</div>
+	</div>
+	<main>
+		
+		<div id="video-container">
+			<video width="640" id="video" controls>
+			
+	 		</video>
+	 		<div id="toolbar">
+		 		<div class="progress">
+		 			<progress id="progress" value="0" min="0">
+			         	<span id="progress-bar"></span>
+			      	</progress>
+		 		</div>
+		 		<nav id="video-controls" class="controls noselect">
+				   <li><i id="playpause" class="material-icons">play_arrow</i></li>
+				   <li><i id="mute" class="material-icons">volume_up</i></li>
+				   <li><input id="volume" type="range" max="100" min="0" oninput="updateVolume(value)"></li>
+				   <li><time id="playback-time"></time> / <time id="playback-total"></time></li>
+				   <li style="flex-grow:1;"></li>
+				   <li><i class="material-icons">settings</i></li>
+				   <li><i id="fs" class="material-icons">fullscreen</i></li>
+				</nav>
+			</div>
+		</div>
+		
 	</main>
 <script>
 
@@ -134,7 +201,6 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	video.appendChild(srcElement);
 
 
-	var volval = $('#volume-val');
 	//
 
 	var videoContainer = $('#video-container');
@@ -144,7 +210,6 @@ http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	var volume = $('#volume');
 	volume.value = video.volume*100;
 	video.controls = false;
-console.log(video.duration);
 
 
 	//Custom Video Controls base code from https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player
@@ -176,7 +241,6 @@ console.log(video.duration);
 
 	function updateVolume(val){
 		video.volume = val/100;
-		volval.innerHTML = video.volume;
 	}
 
 	function secsToTime(secs){
@@ -276,28 +340,76 @@ console.log(video.duration);
 		e.target.className = (e.type == 'dragover' ? 'hover' : '');
 	}
 
+	var currentVideo;
 	function FileSelectHandler(e) {
+
+		scaleZone();
 
 		// cancel event and hover styling
 		FileDragHover(e);
 		// // fetch FileList object
-		 var files = e.target.files || e.dataTransfer.files;
-
-		console.log(files);
-
-		// // process all File objects
-		// for (var i = 0, f; f = files[i]; i++) {
-		// 	ParseFile(f);
-		// }
+		var files = e.target.files || e.dataTransfer.files;
+		currentVideo = files[0];
 
 		
 
+	}
+	var currentScale = 1;
+	var currentOpacity = 1;
 
-		var srcElement = document.createElement('source');
-		srcElement.src = files[0].name;
-		srcElement.type = files[0].type;
-		video.appendChild(srcElement);
+	function scaleZone(){
+		if(currentOpacity <= 0){
+			window.cancelAnimationFrame(scaleZone);
+			var srcElement = document.createElement('source');
+			srcElement.src = currentVideo.name;
+			srcElement.type = currentVideo.type;
+			video.appendChild(srcElement);
+			scaleVideo();
+			return;
+		}
+		currentScale += 0.2;
+		currentOpacity -= 0.15;
+		dropzone.style.opacity = currentOpacity;
+		dropzone.style.transform = 'scale(' + currentScale + ')';
+		requestAnimationFrame(scaleZone);
+	}
 
+	var videoScale = 0.5;
+	var videoOpacity = 0;
+	function scaleVideo(){
+		if(videoScale >= 1){
+			// /videoScale = 1;
+			video.style.transform = 'scale(1)';
+			window.cancelAnimationFrame(scaleVideo);
+			$('#drop-overlay').style.pointerEvents ='none';
+			enterToolbar();
+			return;
+		}
+
+		videoScale += 0.1;
+		videoOpacity += 0.2;
+		video.style.transform = 'scale(' + videoScale + ')';
+		video.style.opacity = videoOpacity;
+
+		requestAnimationFrame(scaleVideo);
+	}
+
+	var toolbar = $('#toolbar');
+	var toolOpacity = 0;
+	var toolY = 22;
+	function enterToolbar(){
+		if(toolOpacity >= 1){
+			toolbar.style.opacity = 1;
+			window.cancelAnimationFrame(enterToolbar);
+			return;
+		}
+
+
+		toolOpacity += 0.1;
+		toolY -= 2;
+		toolbar.style.transform = 'translateY(' + toolY + 'px)';
+		toolbar.style.opacity = toolOpacity;
+		requestAnimationFrame(enterToolbar);
 	}
 
 </script>
