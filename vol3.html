@@ -77,10 +77,91 @@ header{
 			Soko radicchio bunya nuts gram dulse silver beet parsnip napa cabbage lotus root sea lettuce brussels sprout cabbage. Catsear cauliflower garbanzo yarrow salsify chicory garlic bell pepper napa cabbage lettuce tomato kale arugula melon sierra leone bologi rutabaga tigernut. Sea lettuce gumbo grape kale kombu cauliflower salsify kohlrabi okra sea lettuce broccoli celery lotus root carrot winter purslane turnip greens garlic. Jícama garlic courgette coriander radicchio plantain scallion cauliflower fava bean desert raisin spring onion chicory bunya nuts. Sea lettuce water spinach gram fava bean leek dandelion silver beet eggplant bush tomato.
 		</div>
 	</article>
+	<aside id="word-count">
+asdasd
+	</aside>
 </main>
-
 <script>
 
+/* Utilities */
+//get first
+var $ = function(elem){
+	return document.querySelector(elem);
+}
+
+//get array
+var $_ = function(elem){
+	return document.querySelectAll(elem);
+}
+
+//http://www.noupe.com/design/html5-filesystem-api-create-files-store-locally-using-javascript-webkit.html
+
+
+var saveFile = function(localstorage) {
+  localstorage.root.getFile("info.txt", {create: true}, function(DatFile) {
+    DatFile.createWriter(function(DatContent) {
+      var blob = new Blob(["Lorem Ipsum"], {type: "text/plain"});
+      DatContent.write(blob);
+    });
+  });
+};
+
+navigator.webkitPersistentStorage.requestQuota(1024*1024, function() {
+	window.webkitRequestFileSystem(window.PERSISTENT , 1024*1024, saveFile);
+})
+/* Main */
+//Code adapted from https://jsfiddle.net/deepumohanp/jZeKu/
+var counter = function() {
+	console.log('asdas');
+    var value = $('#content').innerHTML;
+
+    if (value.length == 0) {
+        $('#word-count').innerHTML = '0';
+        // $('#totalChars').html(0);
+        // $('#charCount').html(0);
+        // $('#charCountNoSpace').html(0);
+        return;
+    }
+
+    var regex = /\s+/gi;
+    var wordCount = value.trim().replace(regex, ' ').split(' ').length;
+    // var totalChars = value.length;
+    // var charCount = value.trim().length;
+    // var charCountNoSpace = value.replace(regex, '').length;
+
+    $('#word-count').innerHTML = wordCount;
+    // $('#totalChars').html(totalChars);
+    // $('#charCount').html(charCount);
+    // $('#charCountNoSpace').html(charCountNoSpace);
+};
+
+(function() {
+	$('#content').addEventListener('keyup',
+
+		function() {
+			console.log('asdas');
+		    var value = $('#content').innerHTML;
+
+		    if (value.length == 0) {
+		        $('#word-count').innerHTML = '0';
+		        // $('#totalChars').html(0);
+		        // $('#charCount').html(0);
+		        // $('#charCountNoSpace').html(0);
+		        return;
+		    }
+
+		    var regex = /\s+/gi;
+		    var wordCount = value.trim().replace(regex, ' ').split(' ').length;
+		    // var totalChars = value.length;
+		    // var charCount = value.trim().length;
+		    // var charCountNoSpace = value.replace(regex, '').length;
+
+		    $('#word-count').innerHTML = wordCount;
+		    // $('#totalChars').html(totalChars);
+		    // $('#charCount').html(charCount);
+		    // $('#charCountNoSpace').html(charCountNoSpace);
+		});
+})();
 </script>
 </body>
 </html>
